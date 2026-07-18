@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Backend runtime data
+backend/database/*.db
+backend/storage/documents/*
+!backend/storage/documents/.gitkeep
+
+# Env
+.env
+
+# Node / frontend
+node_modules/
+dist/
+
+# OS
+.DS_Store

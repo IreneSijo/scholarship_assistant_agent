@@ -1,0 +1,134 @@
+[
+  {
+    "id": "sch-001",
+    "name": "National Merit Excellence Scholarship",
+    "description": "Awarded to high-achieving undergraduate students across all disciplines who demonstrate consistent academic excellence.",
+    "minimum_cgpa": 8.5,
+    "maximum_income": 800000,
+    "eligible_gender": ["Male", "Female", "Other"],
+    "eligible_state": ["All"],
+    "required_documents": ["aadhaar", "marksheet", "income_certificate"],
+    "deadline": "2026-09-30"
+  },
+  {
+    "id": "sch-002",
+    "name": "Women in STEM Grant",
+    "description": "Supports women pursuing science, technology, engineering, or mathematics degrees.",
+    "minimum_cgpa": 7.0,
+    "maximum_income": 1000000,
+    "eligible_gender": ["Female"],
+    "eligible_state": ["All"],
+    "required_documents": ["aadhaar", "marksheet", "bonafide_certificate"],
+    "deadline": "2026-08-15"
+  },
+  {
+    "id": "sch-003",
+    "name": "Economically Weaker Section (EWS) Support Fund",
+    "description": "Financial assistance for students from economically weaker sections to continue higher education.",
+    "minimum_cgpa": 5.5,
+    "maximum_income": 300000,
+    "eligible_gender": ["Male", "Female", "Other"],
+    "eligible_state": ["All"],
+    "required_documents": ["aadhaar", "income_certificate", "community_certificate"],
+    "deadline": "2026-10-05"
+  },
+  {
+    "id": "sch-004",
+    "name": "Kerala State Higher Education Scholarship",
+    "description": "State-sponsored scholarship for students studying in Kerala with good academic standing.",
+    "minimum_cgpa": 6.5,
+    "maximum_income": 600000,
+    "eligible_gender": ["Male", "Female", "Other"],
+    "eligible_state": ["Kerala"],
+    "required_documents": ["aadhaar", "marksheet", "bonafide_certificate", "income_certificate"],
+    "deadline": "2026-09-01"
+  },
+  {
+    "id": "sch-005",
+    "name": "SC/ST Community Upliftment Scholarship",
+    "description": "Reserved scholarship supporting students from SC/ST communities pursuing undergraduate or postgraduate studies.",
+    "minimum_cgpa": 5.0,
+    "maximum_income": 500000,
+    "eligible_gender": ["Male", "Female", "Other"],
+    "eligible_state": ["All"],
+    "required_documents": ["aadhaar", "community_certificate", "income_certificate"],
+    "deadline": "2026-11-20"
+  },
+  {
+    "id": "sch-006",
+    "name": "Engineering Talent Scholarship",
+    "description": "For students enrolled in engineering programs with strong academic performance.",
+    "minimum_cgpa": 8.0,
+    "maximum_income": 1200000,
+    "eligible_gender": ["Male", "Female", "Other"],
+    "eligible_state": ["All"],
+    "required_documents": ["aadhaar", "marksheet", "bonafide_certificate"],
+    "deadline": "2026-08-30"
+  },
+  {
+    "id": "sch-007",
+    "name": "First Generation Learner Scholarship",
+    "description": "Supports students who are the first in their family to pursue higher education.",
+    "minimum_cgpa": 6.0,
+    "maximum_income": 400000,
+    "eligible_gender": ["Male", "Female", "Other"],
+    "eligible_state": ["All"],
+    "required_documents": ["aadhaar", "income_certificate", "marksheet"],
+    "deadline": "2026-09-15"
+  },
+  {
+    "id": "sch-008",
+    "name": "Tamil Nadu Merit Scholarship",
+    "description": "Merit-based scholarship for students studying within Tamil Nadu.",
+    "minimum_cgpa": 7.5,
+    "maximum_income": 700000,
+    "eligible_gender": ["Male", "Female", "Other"],
+    "eligible_state": ["Tamil Nadu"],
+    "required_documents": ["aadhaar", "marksheet", "passport_photo"],
+    "deadline": "2026-10-10"
+  },
+  {
+    "id": "sch-009",
+    "name": "Minority Community Education Grant",
+    "description": "Financial aid for students belonging to recognized minority communities.",
+    "minimum_cgpa": 5.5,
+    "maximum_income": 450000,
+    "eligible_gender": ["Male", "Female", "Other"],
+    "eligible_state": ["All"],
+    "required_documents": ["aadhaar", "community_certificate", "bonafide_certificate"],
+    "deadline": "2026-09-25"
+  },
+  {
+    "id": "sch-010",
+    "name": "Postgraduate Research Fellowship",
+    "description": "Fellowship supporting postgraduate students engaged in research-oriented coursework.",
+    "minimum_cgpa": 8.2,
+    "maximum_income": 1500000,
+    "eligible_gender": ["Male", "Female", "Other"],
+    "eligible_state": ["All"],
+    "required_documents": ["aadhaar", "marksheet", "bonafide_certificate", "passport_photo"],
+    "deadline": "2026-12-01"
+  },
+  {
+    "id": "sch-011",
+    "name": "Karnataka Student Aid Program",
+    "description": "State assistance program for students residing and studying in Karnataka.",
+    "minimum_cgpa": 6.0,
+    "maximum_income": 550000,
+    "eligible_gender": ["Male", "Female", "Other"],
+    "eligible_state": ["Karnataka"],
+    "required_documents": ["aadhaar", "income_certificate", "marksheet"],
+    "deadline": "2026-08-20"
+  },
+  {
+    "id": "sch-012",
+    "name": "Differently Abled Student Support Scholarship",
+    "description": "Dedicated financial support for differently abled students pursuing higher studies.",
+    "minimum_cgpa": 5.0,
+    "maximum_income": 900000,
+    "eligible_gender": ["Male", "Female", "Other"],
+    "eligible_state": ["All"],
+    "required_documents": ["aadhaar", "income_certificate", "community_certificate"],
+    "deadline": "2026-11-05"
+  }
+]

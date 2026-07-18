@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+.seal-badge {
+  background-image: radial-gradient(circle at 30% 30%, #E4C489, #B98A2E 70%);
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(185, 138, 46, 0.35); }
+  100% { box-shadow: 0 0 0 10px rgba(185, 138, 46, 0); }
+}
+.pulse-ring {
+  animation: pulse-ring 1.8s ease-out infinite;
+}
