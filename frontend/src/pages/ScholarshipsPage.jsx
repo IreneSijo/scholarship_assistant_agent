@@ -5,6 +5,7 @@ import { Card, PageHeader, Badge, Button } from "../components/ui.jsx";
 export default function ScholarshipsPage() {
   const [all, setAll] = useState([]);
   const [eligibleIds, setEligibleIds] = useState(new Set());
+  const [appliedIds, setAppliedIds] = useState(new Set());
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(null);
@@ -12,10 +13,11 @@ export default function ScholarshipsPage() {
 
   function refresh() {
     setLoading(true);
-    Promise.all([api.getScholarships(), api.getEligibleScholarships()])
-      .then(([scholarships, eligible]) => {
+    Promise.all([api.getScholarships(), api.getEligibleScholarships(), api.getApplications()])
+      .then(([scholarships, eligible, applications]) => {
         setAll(scholarships);
         setEligibleIds(new Set(eligible.map((s) => s.id)));
+        setAppliedIds(new Set(applications.map((application) => application.scholarship_id)));
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -28,6 +30,7 @@ export default function ScholarshipsPage() {
     setMessage(null);
     try {
       const application = await api.apply(scholarshipId);
+      setAppliedIds((current) => new Set(current).add(scholarshipId));
       setMessage(
         application.status === "submitted"
           ? `Submitted! The agent filed your application via Playwright.`
@@ -58,11 +61,12 @@ export default function ScholarshipsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {all.map((s) => {
           const eligible = eligibleIds.has(s.id);
+          const applied = appliedIds.has(s.id);
           return (
             <Card key={s.id} className={eligible ? "border-seal/40" : ""}>
               <div className="flex items-start justify-between gap-3">
                 <p className="font-display text-lg text-ink-800">{s.name}</p>
-                <Badge tone={eligible ? "success" : "neutral"}>{eligible ? "Eligible" : "Not eligible"}</Badge>
+                <Badge tone={eligible ? "success" : "danger"}>{eligible ? "Eligible" : "Not eligible"}</Badge>
               </div>
               <p className="text-sm text-ink-400 mt-2">{s.description}</p>
               <dl className="grid grid-cols-2 gap-2 mt-4 text-xs">
@@ -84,6 +88,17 @@ export default function ScholarshipsPage() {
                 </div>
               </dl>
               <div className="mt-4">
+                <p className="text-xs text-ink-300">Required documents</p>
+                <p className="mt-1 text-sm text-ink-600">
+                  {s.required_documents.map((document) => document.replaceAll("_", " ")).join(", ")}
+                </p>
+              </div>
+              <div className="mt-4">
+                {applied ? (
+                  <Button variant="seal" disabled>
+                    Applied
+                  </Button>
+                ) : (
                 <Button
                   variant={eligible ? "seal" : "ghost"}
                   disabled={!eligible || applying === s.id}
@@ -91,11 +106,13 @@ export default function ScholarshipsPage() {
                 >
                   {applying === s.id ? "Agent is working…" : "Apply with AI agent"}
                 </Button>
+                )}
               </div>
             </Card>
           );
         })}
       </div>
+
     </>
   );
 }

@@ -1,5 +1,10 @@
 const BASE_URL = "http://localhost:8000";
 
+export function documentFileUrl(filepath) {
+  const filename = filepath.split(/[\\/]/).pop();
+  return `${BASE_URL}/files/${encodeURIComponent(filename)}`;
+}
+
 async function request(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
     ...options,
@@ -30,6 +35,7 @@ export const api = {
     form.append("file", file);
     return request("/documents", { method: "POST", body: form });
   },
+  deleteDocument: (documentId) => request(`/documents/${documentId}`, { method: "DELETE" }),
 
   getScholarships: () => request("/scholarships"),
   getEligibleScholarships: () => request("/eligible-scholarships"),

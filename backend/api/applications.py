@@ -32,6 +32,14 @@ def apply_to_scholarship(payload: ApplyRequest, db: Session = Depends(get_db)):
     if not scholarship:
         raise HTTPException(status_code=404, detail="Scholarship not found")
 
+    existing_application = (
+        db.query(Application)
+        .filter(Application.profile_id == profile.id, Application.scholarship_id == scholarship.id)
+        .first()
+    )
+    if existing_application:
+        raise HTTPException(status_code=409, detail="You have already applied for this scholarship")
+
     thread_id = str(uuid.uuid4())
     application = Application(
         profile_id=profile.id,

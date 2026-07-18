@@ -8,7 +8,10 @@ it just drives a real Chromium browser to fill and submit the demo portal.
 """
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, field
+from pathlib import Path
+from urllib.parse import urlencode
 
 from playwright.sync_api import sync_playwright
 
@@ -29,17 +32,30 @@ class ApplicationFormData:
     income: float
     gender: str
     state: str
-    documents: dict[str, str] = field(default_factory=dict)  # doc_type -> filepath
+    documents: dict[str, dict[str, str]] = field(default_factory=dict)  # doc_type -> {path, filename}
 
 
 def submit_application(form_data: ApplicationFormData, scholarship_id: str) -> dict:
     """
     Launches a *visible* Chromium browser, opens the demo scholarship portal,
-    fills every field, uploads matched documents, and submits the form.
+    fills every field and uploads matched documents. The user reviews the
+    visible form and submits it themselves.
 
     Returns a result dict with success flag and any error message.
     """
-    portal_url = f"{settings.demo_portal_url}?scholarship_id={scholarship_id}"
+    document_links = {
+        document_type: {
+            "filename": document["filename"],
+            "stored_filename": Path(document["path"]).name,
+            "url": f"http://localhost:8000/files/{Path(document['path']).name}",
+        }
+        for document_type, document in form_data.documents.items()
+    }
+    portal_url = f"{settings.demo_portal_url}?{urlencode({
+        'scholarship_id': scholarship_id,
+        'required_documents': ','.join(form_data.documents),
+        'document_links': json.dumps(document_links),
+    })}"
     logger.info("Launching Playwright against %s", portal_url)
 
     result = {"success": False, "message": ""}
@@ -67,20 +83,21 @@ def submit_application(form_data: ApplicationFormData, scholarship_id: str) -> d
                 "marksheet": 'input[name="marksheet_file"]',
                 "bonafide_certificate": 'input[name="bonafide_certificate_file"]',
                 "passport_photo": 'input[name="passport_photo_file"]',
+                "community_certificate": 'input[name="community_certificate_file"]',
             }
-            for doc_type, filepath in form_data.documents.items():
+            for doc_type, document in form_data.documents.items():
                 selector = upload_field_map.get(doc_type)
                 if selector:
                     try:
-                        page.set_input_files(selector, filepath)
+                        page.set_input_files(selector, document["path"])
                     except Exception as exc:  # noqa: BLE001
                         logger.warning("Could not upload %s: %s", doc_type, exc)
 
-            page.click('button[type="submit"]')
-            page.wait_for_timeout(1500)
+            logger.info("Form is ready for user review; waiting for submission")
+            page.wait_for_selector("text=Application received. Thank you for applying.", timeout=0)
 
             result["success"] = True
-            result["message"] = "Application submitted via Playwright automation."
+            result["message"] = "Application reviewed and submitted."
         except Exception as exc:  # noqa: BLE001
             logger.exception("Playwright automation failed")
             result["message"] = f"Automation failed: {exc}"

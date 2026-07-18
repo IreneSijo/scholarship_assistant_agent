@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const BASE_URL = "http://localhost:8000";
 
@@ -8,6 +8,7 @@ const FILE_FIELDS = [
   { name: "marksheet_file", label: "Upload Marksheet" },
   { name: "bonafide_certificate_file", label: "Upload Bonafide Certificate" },
   { name: "passport_photo_file", label: "Upload Passport Photo" },
+  { name: "community_certificate_file", label: "Upload Community Certificate" },
 ];
 
 /**
@@ -20,19 +21,29 @@ const FILE_FIELDS = [
 export default function DemoPortalPage() {
   const params = new URLSearchParams(window.location.search);
   const scholarshipId = params.get("scholarship_id") || "";
+  const requiredDocuments = (params.get("required_documents") || "").split(",").filter(Boolean);
+  const documentLinks = JSON.parse(params.get("document_links") || "{}");
   const [status, setStatus] = useState(null);
+  const [attachedDocuments, setAttachedDocuments] = useState({});
+  const fileInputRefs = useRef({});
 
   async function handleSubmit(e) {
     e.preventDefault();
     const form = e.target;
+    if (!form.checkValidity()) {
+      setStatus({ type: "error", message: "Please complete every required field and attach each required document before submitting." });
+      form.reportValidity();
+      return;
+    }
     const formData = new FormData(form);
     formData.append("scholarship_id", scholarshipId);
     try {
       const res = await fetch(`${BASE_URL}/demo-portal/submit`, { method: "POST", body: formData });
-      if (!res.ok) throw new Error("Submission failed");
-      setStatus("success");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Submission failed");
+      setStatus({ type: "success" });
     } catch (err) {
-      setStatus("error");
+      setStatus({ type: "error", message: err.message });
     }
   }
 
@@ -45,7 +56,7 @@ export default function DemoPortalPage() {
           website the AI agent fills out via Playwright.
         </p>
 
-        {status === "success" ? (
+        {status?.type === "success" ? (
           <div style={{ background: "#e6f4ea", border: "1px solid #34a853", padding: 16, borderRadius: 4 }}>
             Application received. Thank you for applying.
           </div>
@@ -79,17 +90,62 @@ export default function DemoPortalPage() {
 
             <hr style={{ margin: "20px 0", border: "none", borderTop: "1px solid #eee" }} />
 
-            {FILE_FIELDS.map((f) => (
+            {FILE_FIELDS.filter((f) => requiredDocuments.includes(f.name.replace("_file", ""))).map((f) => (
               <div key={f.name} style={{ marginBottom: 14 }}>
                 <label style={{ display: "block", fontSize: 13, marginBottom: 4 }}>{f.label}</label>
-                <input name={f.name} type="file" style={inputStyle} />
+                <input
+                  ref={(element) => {
+                    fileInputRefs.current[f.name] = element;
+                  }}
+                  name={f.name}
+                  type="file"
+                  required={requiredDocuments.includes(f.name.replace("_file", ""))}
+                  style={{ display: "none" }}
+                  onChange={(event) => {
+                    const documentType = f.name.replace("_file", "");
+                    const selectedFile = event.target.files?.[0];
+                    const vaultFile = documentLinks[documentType];
+                    const isVaultFile = selectedFile && vaultFile && (
+                      selectedFile.name === vaultFile.stored_filename || selectedFile.name === vaultFile.filename
+                    );
+                    setAttachedDocuments((current) => ({
+                      ...current,
+                      [documentType]: selectedFile
+                        ? {
+                            filename: isVaultFile ? vaultFile.filename : selectedFile.name,
+                            url: isVaultFile ? vaultFile.url : URL.createObjectURL(selectedFile),
+                          }
+                        : null,
+                    }));
+                  }}
+                />
+                <div style={{ display: "flex", gap: 8 }}>
+                  {attachedDocuments[f.name.replace("_file", "")]?.url ? (
+                    <a
+                      href={attachedDocuments[f.name.replace("_file", "")].url}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={attachedFileStyle}
+                    >
+                      {attachedDocuments[f.name.replace("_file", "")].filename}
+                    </a>
+                  ) : (
+                    <span style={emptyFileStyle}>No file chosen</span>
+                  )}
+                  <button type="button" style={chooseFileStyle} onClick={() => fileInputRefs.current[f.name]?.click()}>
+                    Choose file
+                  </button>
+                </div>
               </div>
             ))}
 
+            <p style={{ color: "#444", fontSize: 13, margin: "20px 0 12px" }}>
+              Your application has been filled by the AI agent. Review the details, then submit when ready.
+            </p>
             <button type="submit" style={submitStyle}>
-              Submit Application
+              Review &amp; Submit
             </button>
-            {status === "error" && <p style={{ color: "#c5221f", fontSize: 13, marginTop: 10 }}>Submission failed.</p>}
+            {status?.type === "error" && <p style={{ color: "#c5221f", fontSize: 13, marginTop: 10 }}>{status.message}</p>}
           </form>
         )}
       </div>
@@ -104,6 +160,29 @@ const inputStyle = {
   borderRadius: 4,
   fontSize: 14,
   boxSizing: "border-box",
+};
+
+const attachedFileStyle = {
+  ...inputStyle,
+  flex: 1,
+  color: "#1a73e8",
+  textDecoration: "underline",
+  cursor: "pointer",
+};
+
+const emptyFileStyle = {
+  ...inputStyle,
+  flex: 1,
+  color: "#666",
+};
+
+const chooseFileStyle = {
+  background: "#fff",
+  border: "1px solid #999",
+  borderRadius: 4,
+  padding: "8px 10px",
+  cursor: "pointer",
+  whiteSpace: "nowrap",
 };
 
 const submitStyle = {

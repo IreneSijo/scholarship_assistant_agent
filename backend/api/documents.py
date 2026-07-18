@@ -33,3 +33,18 @@ def upload_document(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return doc
+
+
+@router.delete("/{document_id}", status_code=204)
+def delete_document(document_id: int, db: Session = Depends(get_db)):
+    profile = db.query(Profile).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Document not found")
+    document = db.query(Document).filter(Document.id == document_id, Document.profile_id == profile.id).first()
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+    from services.document_service import delete_document_file
+
+    delete_document_file(document.filepath)
+    db.delete(document)
+    db.commit()

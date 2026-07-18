@@ -52,6 +52,7 @@ def save_document(db: Session, profile_id: int, document_type: str, upload: Uplo
         .first()
     )
     if existing:
+        delete_document_file(existing.filepath)
         db.delete(existing)
         db.flush()
 
@@ -68,17 +69,27 @@ def save_document(db: Session, profile_id: int, document_type: str, upload: Uplo
     return doc
 
 
+def delete_document_file(filepath: str) -> None:
+    """Remove a vault file if it is inside the configured document storage."""
+    path = Path(filepath).resolve()
+    storage_dir = Path(settings.document_storage_path).resolve()
+    if path.is_relative_to(storage_dir) and path.is_file():
+        path.unlink()
+
+
 def match_documents_to_requirements(
     db: Session, profile_id: int, required_documents: list[str]
-) -> tuple[dict[str, str], list[str]]:
+) -> tuple[dict[str, dict[str, str]], list[str]]:
     """
     Resolves required_documents (e.g. ["aadhaar", "income_certificate"]) against
     the profile's stored documents using the document_type metadata field.
 
-    Returns (matched: {doc_type: filepath}, missing: [doc_type, ...])
+    Returns (matched: {doc_type: {path, filename}}, missing: [doc_type, ...]).
+    Keeping the original filename lets the review form identify the same file
+    the user uploaded to the vault.
     """
     docs = db.query(Document).filter(Document.profile_id == profile_id).all()
-    by_type = {d.document_type: d.filepath for d in docs}
+    by_type = {d.document_type: {"path": d.filepath, "filename": d.filename} for d in docs}
 
     matched: dict[str, str] = {}
     missing: list[str] = []

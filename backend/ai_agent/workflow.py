@@ -42,7 +42,7 @@ class AgentState(TypedDict, total=False):
     application_id: int
     profile: dict
     scholarship: dict
-    matched_documents: dict[str, str]
+    matched_documents: dict[str, dict[str, str]]
     missing_documents: list[str]
     status: str
     message: str

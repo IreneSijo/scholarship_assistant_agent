@@ -5,11 +5,12 @@ This simulates an external scholarship website's own backend: it just
 receives the submitted form + files and stores them, with no knowledge of
 our agent, our Profile, or our Application table.
 """
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from database.db import get_db
 from models.models import DemoSubmission
+from services.dataset_service import get_scholarship_by_id
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -33,8 +34,31 @@ def submit_demo_application(
     marksheet_file: UploadFile | None = File(None),
     bonafide_certificate_file: UploadFile | None = File(None),
     passport_photo_file: UploadFile | None = File(None),
+    community_certificate_file: UploadFile | None = File(None),
     db: Session = Depends(get_db),
 ):
+    required_values = {
+        "name": name, "email": email, "phone": phone, "college": college, "course": course,
+        "gender": gender, "state": state,
+    }
+    missing_values = [field for field, value in required_values.items() if not str(value).strip()]
+    if missing_values:
+        raise HTTPException(status_code=422, detail=f"Complete the required fields: {', '.join(missing_values)}")
+
+    files_by_type = {
+        "aadhaar": aadhaar_file,
+        "income_certificate": income_certificate_file,
+        "marksheet": marksheet_file,
+        "bonafide_certificate": bonafide_certificate_file,
+        "passport_photo": passport_photo_file,
+        "community_certificate": community_certificate_file,
+    }
+    scholarship = get_scholarship_by_id(scholarship_id)
+    required_documents = scholarship.required_documents if scholarship else []
+    missing_files = [doc_type for doc_type in required_documents if not files_by_type.get(doc_type) or not files_by_type[doc_type].filename]
+    if missing_files:
+        raise HTTPException(status_code=422, detail=f"Attach the required documents: {', '.join(missing_files)}")
+
     received_files = []
     for label, f in [
         ("aadhaar", aadhaar_file),
@@ -42,6 +66,7 @@ def submit_demo_application(
         ("marksheet", marksheet_file),
         ("bonafide_certificate", bonafide_certificate_file),
         ("passport_photo", passport_photo_file),
+        ("community_certificate", community_certificate_file),
     ]:
         if f is not None and f.filename:
             received_files.append(label)
