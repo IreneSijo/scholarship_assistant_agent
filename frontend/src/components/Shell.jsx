@@ -1,7 +1,8 @@
 import { NavLink } from "react-router-dom";
+import logo from "../assets/logo.png";
 
 const NAV_ITEMS = [
-  { to: "/", label: "Dashboard", icon: "◈" },
+  { to: "/dashboard", label: "Dashboard", icon: "◈" },
   { to: "/profile", label: "Profile", icon: "◇" },
   { to: "/documents", label: "Document Vault", icon: "▤" },
   { to: "/scholarships", label: "Find Scholarships", icon: "✦" },
@@ -14,12 +15,14 @@ export default function Shell({ children }) {
     <div className="min-h-screen flex bg-paper">
       <aside className="w-64 shrink-0 bg-ink-800 text-paper flex flex-col">
         <div className="px-6 py-7 flex items-center gap-3 border-b border-ink-600/60">
-          <div className="w-10 h-10 rounded-seal seal-badge flex items-center justify-center text-ink-900 font-display font-bold text-lg shadow-card">
-            S
-          </div>
+          <img
+            src={logo}
+            alt="Scholarship Assistant logo"
+            className="w-10 h-10 rounded-seal object-cover shadow-card"
+          />
           <div>
-            <p className="font-display text-lg leading-tight tracking-tight">Scholarship</p>
-            <p className="font-display text-lg leading-tight tracking-tight -mt-1">Assistant</p>
+            <p className="font-display text-lg leading-tight tracking-tight">ScholarMate</p>
+            <p className="font-display text-lg leading-tight tracking-tight -mt-1"></p>
           </div>
         </div>
         <nav className="flex-1 px-3 py-6 space-y-1">
@@ -27,7 +30,7 @@ export default function Shell({ children }) {
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === "/"}
+              end={item.to === "/dashboard"}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   isActive
@@ -42,8 +45,6 @@ export default function Shell({ children }) {
           ))}
         </nav>
         <div className="px-6 py-5 border-t border-ink-600/60 text-xs text-ink-200">
-          <p className="font-mono">Agentic AI · LangGraph + Gemini</p>
-          <p className="mt-1 text-ink-400">Playwright-automated filing</p>
         </div>
       </aside>
       <main className="flex-1 min-w-0">

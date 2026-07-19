@@ -97,7 +97,7 @@ export default function ProfilePage() {
       <PageHeader
         eyebrow="Applicant profile"
         title="Tell the agent about yourself"
-        description="This is the single source of truth the AI agent uses to check eligibility and pre-fill applications."
+        description="Fill in all the necessary details."
       />
 
       <form onSubmit={handleSubmit} className="space-y-6">

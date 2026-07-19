@@ -73,7 +73,7 @@ export default function DocumentsPage() {
       <PageHeader
         eyebrow="Document vault"
         title="Keep your documents ready"
-        description="Every document is tagged by type so the agent can match it to a scholarship's requirements automatically - it never guesses from filenames."
+        description=""
       />
 
       {error && <p className="text-sm text-rust mb-4">{error}</p>}

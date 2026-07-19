@@ -36,7 +36,7 @@ export default function ChatPage() {
       <PageHeader
         eyebrow="Ask the assistant"
         title="Talk to your scholarship agent"
-        description="Grounded in your live profile, documents, and the scholarship dataset - the same data the LangGraph agent uses to make decisions."
+        description=""
       />
 
       <Card className="flex flex-col h-[28rem]">

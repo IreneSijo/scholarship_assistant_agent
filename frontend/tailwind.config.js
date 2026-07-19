@@ -25,7 +25,7 @@ export default {
         rust: "#B0472C",
       },
       fontFamily: {
-        display: ["\"Fraunces\"", "serif"],
+        display: ["\"Montserrat\"", "sans-serif"],
         body: ["\"Inter\"", "sans-serif"],
         mono: ["\"JetBrains Mono\"", "monospace"],
       },

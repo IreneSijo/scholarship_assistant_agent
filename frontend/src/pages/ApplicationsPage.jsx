@@ -44,7 +44,7 @@ export default function ApplicationsPage() {
       <PageHeader
         eyebrow="Applications"
         title="Track what the agent has filed"
-        description="Applications paused by the agent are waiting on you to upload a missing document. Resuming continues the same LangGraph workflow - it doesn't restart from scratch."
+        description=""
       />
 
       {applications.length === 0 ? (
